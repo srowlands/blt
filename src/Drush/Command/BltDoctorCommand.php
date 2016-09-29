@@ -186,6 +186,7 @@ class BltDoctor {
     $this->checkComposerConfig();
     $this->checkBehatConfig();
     $this->checkProjectYml();
+    $this->checkPhpTimezone();
     $this->checkAcsfConfig();
     $this->checkDrushAliases();
     $this->checkDrupalVmConfig();
@@ -825,6 +826,22 @@ class BltDoctor {
 
     if (!$deprecated_keys_exist) {
       drush_log("project.yml has no deprecated keys.", 'notice');
+    }
+  }
+
+  /**
+   * Checks that PHP has a date.timezone set.
+   */
+  protected function checkPhpTimezone() {
+    if (!ini_get('date.timezone')) {
+      $this->logError("PHP setting value for date.timezone is not set.");
+      if ($iniPath = php_ini_loaded_file()) {
+        $this->logErrorDetail("Check the value is correct in $iniPath");
+        $this->logErrorDetail();
+      }
+    }
+    else {
+      drush_log("The PHP setting for date.timezone contains a value.", 'notice');
     }
   }
 }
